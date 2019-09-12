@@ -48,11 +48,11 @@
 
 			<?php
 				$i = 0; $j = 0;			
-			  	for ($i = 12; $i <= 22; $i++) {
+			  	for ($i = 8; $i <= 18; $i++) {
 				
 					if ($i % 2 == 0 && $i != substr($horaInicio,0,2)) {
 					    
-					    echo '<p>'.$i.':00:00 &nbsp;&nbsp;às';		
+					    echo '<p>'.$i.':00 &nbsp;&nbsp;às';		
 					}
 
 				}?>
@@ -60,11 +60,11 @@
 			</td>
 			
 			<td width="8%">
-				<?php for ($j = 13; $j <= 23; $j++) {
+				<?php for ($j = 9; $j <= 19; $j++) {
 				
 					if ($j % 2 != 0 && $j != substr($horaFim,0,2)) {
 					    
-					   echo '<p>'.$j.':00:00';		
+					   echo '<p>'.$j.':00';		
 					}
 
 				}		

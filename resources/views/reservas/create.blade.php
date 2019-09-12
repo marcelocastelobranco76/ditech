@@ -22,24 +22,21 @@
          {{ Form::text('data', Input::old('data'),array('getElementById' => 'data', 'class' => 'form-control', 'placeholder' => 'dd/mm/aaa') ) }}
 	
 	{{ Form::label('hora_inicio', 'Hora início') }}
-        {{ Form::select('hora_inicio', 
-	array('12' => '12:00', 
-       '14:00' => '14:00',
-       '16:00' => '16:00',
-       '18:00' => '18:00',  		
-       '20:00' => '20:00',
-       '22:00' => '22:00'		
-	), null, array('class' => 'form-control'))}}
+        <select id="hora_inicio" name="hora_inicio" class="form-control">
+  
+	    @for ($i = 8; $i <= 18; $i++)
+	    <option value="{{ $i }}:00">{{ $i }}:00</option>
+	    @endfor               
+	</select>
 
 	
 	{{ Form::label('hora_fim', 'Hora fim') }}
-	{{Form::select('hora_fim', array('13:00' => '13:00', 
-       '15:00' => '15:00',
-       '17:00' => '17:00',
-       '19:00' => '19:00',  		
-       '21:00' => '21:00',
-       '23:00' => '23:00'), null, array('class' => 'form-control'))}}
-
+	 <select id="hora_fim" name="hora_fim" class="form-control">
+  
+	    @for ($j = 9; $j <= 19; $j++)
+	    <option value="{{ $j }}:00">{{ $j }}:00</option>
+	    @endfor               
+	</select>
         {{ Form::label('descricao', 'Descrição') }}
         {{ Form::text('descricao', Input::old('descricao'), array('class' => 'form-control', 'placeholder' => 'Informe a descrição')) }}
                 
