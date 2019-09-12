@@ -56,7 +56,7 @@
 			    <li><a href="{{ url('admin/reservas') }}">Reservas</a></li>	
 			    <li><a href="{{ url('admin/usuarios') }}">Usuários</a></li>		
                         @else
-	                    <li><a href="{{ url('mostrar_reservas') }}">Todas as reservas</a></li>
+	                    <li><a href="{{ url('reservas') }}">Todas as reservas</a></li>
                             <li><a href="{{ url('reservas/cadastrar') }}">Reservar sala</a></li>
                             <li><a href="{{ url('salas') }}">Salas</a></li>
 			    	

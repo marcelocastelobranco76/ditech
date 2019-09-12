@@ -40,6 +40,8 @@ Route::get('logout', 'Auth\LoginController@logout'); /** Rota para logout **/
 
 Route::any('/salas','SalaController@index');
 
+Route::any('/reservas','ReservaController@index');
+
 Route::get('reservas/cadastrar', 'ReservaController@create');
 
 Route::post('reservas', 'ReservaController@store');

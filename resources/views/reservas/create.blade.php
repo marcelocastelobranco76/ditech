@@ -18,7 +18,8 @@
 	{{ Form::label('id', 'Salas disponíveis para reserva') }}
         {!! Form::select('id', $salas, null, ['class' => 'form-control']) !!}
 
-       
+         {{ Form::label('data', 'Data') }}
+         {{ Form::text('data', Input::old('data'),array('getElementById' => 'data', 'class' => 'form-control', 'placeholder' => 'dd/mm/aaa') ) }}
 	
 	{{ Form::label('hora_inicio', 'Hora início') }}
         {{ Form::select('hora_inicio', 
@@ -31,15 +32,17 @@
 	), null, array('class' => 'form-control'))}}
 
 	
-{{ Form::label('hora_fim', 'Hora fim') }}
-{{Form::select('hora_fim', array('13:00' => '13:00', 
+	{{ Form::label('hora_fim', 'Hora fim') }}
+	{{Form::select('hora_fim', array('13:00' => '13:00', 
        '15:00' => '15:00',
        '17:00' => '17:00',
        '19:00' => '19:00',  		
        '21:00' => '21:00',
        '23:00' => '23:00'), null, array('class' => 'form-control'))}}
 
-    
+        {{ Form::label('descricao', 'Descrição') }}
+        {{ Form::text('descricao', Input::old('descricao'), array('class' => 'form-control', 'placeholder' => 'Informe a descrição')) }}
+                
 
     </div>
 

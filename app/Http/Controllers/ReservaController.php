@@ -27,7 +27,14 @@ class ReservaController extends Controller
      */
     public function index()
     {
-       $reservas = DB::table('reservas')->join('salas', 'reservas.sala_id', '=', 'salas.id')->select('reservas.*', 'salas.nome','salas.descricao')->paginate(2);
+       $reservas = DB::table('reservas')
+       ->join('users', 'users.id', '=', 'reservas.user_id')
+       ->join('salas', 'salas.id', '=', 'reservas.sala_id')
+       ->select('salas.nome', 'users.name', 'reservas.descricao', 'reservas.hora_inicio', 'reservas.hora_fim')
+       ->paginate(2);
+
+	/**Carrega a visualização e mostra as reservas **/
+          return view('reservas.index', compact('reservas'));
     }
 
     /**
@@ -55,6 +62,7 @@ class ReservaController extends Controller
         /** Validação **/
         
         $regras = array(
+        'descricao' => 'required', 
 	'hora_inicio' => 'required',
 	'hora_fim' => 'required'
         );
@@ -71,18 +79,33 @@ class ReservaController extends Controller
             /** Cria o objeto Reserva, pega as informações vindas da tela de cadastro e salva **/
 
             $reserva = new Reserva; 
-	    $reserva->user_id  = Auth::user()->id;	
-            $reserva->sala_id  = Input::get('id');
-	   
-	    $reserva->hora_inicio = date('HH:MI:SS',strtotime(Input::get('hora_inicio')));
-		
-	    $reserva->hora_fim = date('HH:MI:SS',strtotime(Input::get('hora_fim')));	 
-	    				 	
+	    
+		/** Antes de salvar na base de dados, tem que se verificar as seguintes situações:
+		Um usuário não pode reservar mais de 1 sala no mesmo período
+		1 sala não pode estar reservado por mais de 1 usuário no mesmo período,
+		simultaneamente.
+			
+		 **/
+			    $reserva->user_id  = Auth::user()->id;	
+			    $reserva->sala_id  = Input::get('id');
+
+			    $reserva->descricao  = Input::get('descricao');	
+
+			    $dataReserva = Input::get('data');
+
+			    $horaInicio = Input::get('hora_inicio');
+			    
+			    $horaFim = Input::get('hora_fim');	
+			   
+			    $reserva->hora_inicio = date('Y-m-d H:i:s', strtotime($dataReserva.''.$horaInicio));
+				
+			    $reserva->hora_fim = date('Y-m-d H:i:s', strtotime($dataReserva.''.$horaFim));	 
+			    				 	
             $reserva->save();
 
             /** Mostra mensagem de sucesso e redireciona para a index **/
             Session::flash('message', 'Sala reservada com sucesso. ');
-            return Redirect::to('reservas/cadastrar');
+            return Redirect::to('reservas/');
         }
     }
 
@@ -104,11 +127,16 @@ class ReservaController extends Controller
      * @param  \App\Reserva  $reserva
      * @return \Illuminate\Http\Response
      */
-    public function edit(Reserva $reserva)
+   public function edit($id)
     {
-        //
-    }
+        /** Encontra a reserva pelo id e pelo id do usuário **/
 
+	$user_id = Auth::user()->id;
+        $reserva = DB::select('SELECT * FROM reservas WHERE id = :id AND user_id = :user_id', ['id' => $id, 'user_id' => $user_id]);
+
+        /** Mostra o formulário de edição e passa a reserva que será editada **/
+        return view('reservas.edit', compact('reserva'));
+    }
     /**
      * Update the specified resource in storage.
      *
@@ -116,10 +144,49 @@ class ReservaController extends Controller
      * @param  \App\Reserva  $reserva
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Reserva $reserva)
+     public function update($id)
     {
-        //
+        /** Validação **/
+       
+       $regras = array(
+        'descricao' => 'required', 
+	'hora_inicio' => 'required',
+	'hora_fim' => 'required'
+        );
+        $validator = Validator::make(Input::all(), $regras);
+
+        /** Processa **/
+        if ($validator->fails()) {
+            return Redirect::to('reservas/' . $id . '/editar')
+                ->withErrors($validator);
+        } else {
+          
+	    /** Salva **/
+	    $user_id = Auth::user()->id;	
+            $reserva = DB::select('SELECT * FROM reservas WHERE id = :id AND user_id = :user_id', ['id' => $id, 'user_id' => $user_id]);
+	    
+	    $dataReserva = Input::get('data');
+
+            $horaInicio = Input::get('hora_inicio');
+	    
+            $horaFim = Input::get('hora_fim');
+            
+	    $reserva[0]->descricao = Input::get('descricao');
+	    $reserva[0]->hora_inicio = date('Y-m-d H:i:s', strtotime($dataReserva.''.$horaInicio));
+	    $reserva[0]->hora_fim = date('Y-m-d H:i:s', strtotime($dataReserva.''.$horaFim));	
+          
+	    $reservaDescricao = $reserva[0]->descricao;
+	    $reservaHoraInicio = $reserva[0]->hora_inicio;
+	    $reservaHoraFim = $reserva[0]->hora_fim; 	   			
+
+            DB::update('UPDATE reservas SET descricao = ?, hora_inicio = ?, hora_fim = ? WHERE id = ? AND user_id = ?',[$reservaDescricao,$reservaHoraInicio,$reservaHoraFim,$id,$user_id]);
+
+            /** Redireciona **/
+            Session::flash('message', 'Reserva atualizada com sucesso');
+            return Redirect::to('reservas');
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.
