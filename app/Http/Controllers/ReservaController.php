@@ -129,7 +129,7 @@ class ReservaController extends Controller
 			
 			if( $countReservaUsuarios == 1 ) {
 
-			    Session::flash('message', 'Você não pode reservar a sala pois outro usuário já reservou a mesma sala no mesmo período.');
+			    Session::flash('message', 'A sala já foi reservada por outro usuário no mesmo período.');
 			    return Redirect::to('reservas/');
 
 			}if( $countReservaUsuarios == 0 ){
