@@ -33,6 +33,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function() {
 	Route::patch('/salas/{id}', 'SalaController@update');
 
 	Route::delete('salas/{id}', 'SalaController@destroy');	
+	
+	Route::any('/reservas','ReservaController@index');
 
 
 });

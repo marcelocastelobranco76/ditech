@@ -23,7 +23,7 @@
 	
 	{{ Form::label('hora_inicio', 'Hora início') }}
         {{ Form::select('hora_inicio', 
-	array('12:00' => '12:00', 
+	array('12' => '12:00', 
        '14:00' => '14:00',
        '16:00' => '16:00',
        '18:00' => '18:00',  		

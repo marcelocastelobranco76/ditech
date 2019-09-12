@@ -30,7 +30,7 @@ class ReservaController extends Controller
        $reservas = DB::table('reservas')
        ->join('users', 'users.id', '=', 'reservas.user_id')
        ->join('salas', 'salas.id', '=', 'reservas.sala_id')
-       ->select('salas.nome', 'users.name', 'reservas.descricao', 'reservas.hora_inicio', 'reservas.hora_fim')
+       ->select('salas.nome', 'users.name','reservas.id', 'reservas.descricao', 'reservas.hora_inicio', 'reservas.hora_fim')
        ->paginate(2);
 
 	/**Carrega a visualização e mostra as reservas **/
@@ -75,33 +75,31 @@ class ReservaController extends Controller
             return Redirect::to('reservas/cadastrar')
                 ->withErrors($validator);
         } else {
-		
-            /** Cria o objeto Reserva, pega as informações vindas da tela de cadastro e salva **/
 
-            $reserva = new Reserva; 
-	    
-		/** Antes de salvar na base de dados, tem que se verificar as seguintes situações:
-		Um usuário não pode reservar mais de 1 sala no mesmo período
-		1 sala não pode estar reservado por mais de 1 usuário no mesmo período,
-		simultaneamente.
-			
-		 **/
-			    $reserva->user_id  = Auth::user()->id;	
-			    $reserva->sala_id  = Input::get('id');
-
-			    $reserva->descricao  = Input::get('descricao');	
-
-			    $dataReserva = Input::get('data');
-
-			    $horaInicio = Input::get('hora_inicio');
-			    
-			    $horaFim = Input::get('hora_fim');	
-			   
-			    $reserva->hora_inicio = date('Y-m-d H:i:s', strtotime($dataReserva.''.$horaInicio));
+		/** Verificações que devem ser feitas antes de cadastrar a reserva da sala: **/
+		/**Um usuário não pode reservar mais de 1 sala no mesmo período
+		/**1 sala não pode estar reservado por mais de 1 usuário no mesmo período,simultaneamente.**/
 				
-			    $reserva->hora_fim = date('Y-m-d H:i:s', strtotime($dataReserva.''.$horaFim));	 
-			    				 	
-            $reserva->save();
+			    /** Cria o objeto Reserva, pega as informações vindas da tela de cadastro e salva **/
+
+			    $reserva = new Reserva; 
+			    
+				    $reserva->user_id  = Auth::user()->id;	
+				    $reserva->sala_id  = Input::get('id');
+
+				    $reserva->descricao  = Input::get('descricao');	
+
+				    $dataReserva = Input::get('data');
+
+				    $horaInicio = Input::get('hora_inicio');
+				    
+				    $horaFim = Input::get('hora_fim');	
+				   
+				    $reserva->hora_inicio = date('Y-m-d H:i:s', strtotime($dataReserva.''.$horaInicio));
+					
+				    $reserva->hora_fim = date('Y-m-d H:i:s', strtotime($dataReserva.''.$horaFim));	 
+				    				 	
+			    $reserva->save();
 
             /** Mostra mensagem de sucesso e redireciona para a index **/
             Session::flash('message', 'Sala reservada com sucesso. ');

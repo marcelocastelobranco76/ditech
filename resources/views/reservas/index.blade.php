@@ -7,7 +7,7 @@
 
         <div class="container">
 
-            <h1>Lista de reservas</h1>
+            <h1>Lista de reservas</h1>Exemplo de horário vago: Das 16:00:00 às 17:00:00
 	   @if (Auth::user()->is_admin) <p><a href="{{ url('reservas/cadastrar') }}"> Cadastrar salas</a>@endif
             <!--Div com mensagens do sistema -->
             @if (Session::has('message'))
@@ -22,7 +22,8 @@
                          <td>SALA</td>
 			 <td>DESCRIÇÃO</td>
 			 <td>DATA E HORÁRIO</td>
-			 <td>HORÁRIOS VAGOS</td>	
+			 <td>HORA<br/>INICIAL</td>
+			 <td>HORA<br/>FINAL</td>
             	      @if (Auth::user()->is_admin)<td >AÇÕES</td>@endif
                     </tr>
                 </thead>
@@ -42,8 +43,8 @@
 			  <td  width="13%">{{ $value->name}}</td>
             	          <td  width="7%">{{ $value->nome}}</td>
 			  <td width="15%">{{ $value->descricao}}</td>
-		          <td width="18%"> {{$dataReserva}} <br/> Das {{$horaInicio}} às {{$horaFim}}</td>
-			  <td colspan="2">
+		          <td width="25%"> {{$dataReserva}} Das {{$horaInicio}} às {{$horaFim}}</td>
+			  <td width="8%">
 
 			<?php
 				$i = 0; $j = 0;			
@@ -51,35 +52,32 @@
 				
 					if ($i % 2 == 0 ) {
 					    
-					    echo '<p>'.$i.':00:00 &nbsp;&nbsp;às ';		
+					    echo '<p>'.$i.':00:00 &nbsp;&nbsp;às';		
 					}
 
 				}?>
-				<div style="margin-top:-143px;margin-left:90px">
-
+				
+			</td>
+			
+			<td width="8%">
 				<?php for ($j = substr($horaFim,0,2)+2; $j <= 23; $j++) {
 				
 					if ($j % 2 != 0 ) {
 					    
-					    echo '<p>'.$j.':00:00';		
+					   echo '<p>'.$j.':00:00';		
 					}
 
 				}		
 				?>
-				</div>
-
-
-
-
 			</td>
 		        
                         <!-- Ações : Editar e excluir reservas - Essas ações apenas os administradores podem executar. -->
                          @if (Auth::user()->is_admin)
-			 <td width="10%">
+			 <td width="16%">
                              <a class="btn btn-info pull-left" style="margin-right: 13px;" href="{{ URL::to('/reservas/' . $value->id . '/editar') }}">Editar</a>
                 
                             <!-- Edita a sala (utiliza o método encontrado em GET /reservas/{id}/editar --> 
-                                {{ Form::open(array('style' =>'margin-left: 45%;margin-top: 1%', 'url' => '/reservas/' . $value->id, 'onsubmit' => 'return ConfirmaDelete()')) }}
+                                {{ Form::open(array('style' =>'margin-top: 1%', 'url' => '/reservas/' . $value->id, 'onsubmit' => 'return ConfirmaDelete()')) }}
                                     {{ Form::hidden('_method', 'DELETE') }}
                                    {!! Form::submit('Apagar', ['class' => 'btn btn-danger']) !!}
                                 {{ Form::close() }}
