@@ -26,7 +26,7 @@
                         </p>
                     @else
                         <p>
-                            Liste  todas as <a href="{{ url('reservas') }}">reservas</a> ou <a href="{{ url('reservar') }}">reserve uma sala</a>
+                            Liste  todas as <a href="{{ url('reservas') }}">reservas</a> ou <a href="{{ url('reservas/cadastrar') }}">reserve uma sala</a>
                         </p>
                     @endif
                 </div>
