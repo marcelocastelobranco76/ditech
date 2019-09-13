@@ -22,7 +22,7 @@
          {{ Form::text('data', Input::old('data'),array('getElementById' => 'data', 'class' => 'form-control', 'placeholder' => 'dd/mm/aaa') ) }}
 	
 	{{ Form::label('hora_inicio', 'Hora início') }}
-        <select id="hora_inicio" name="hora_inicio" class="form-control">
+        <select onChange=functionBloqueiaReserva() id="hora_inicio" name="hora_inicio" class="form-control">
   	    <option>Selecione uma hora inicial</option>
 	    @for ($i = 8; $i <= 18; $i++)
 		@if( $i % 2 == 0 )
@@ -75,6 +75,8 @@
 			 @endforeach
 		  
 		</div>
+		
+
 
 </div>
 

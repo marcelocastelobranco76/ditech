@@ -65,8 +65,8 @@ class ReservaController extends Controller
         
         $regras = array(
         'descricao' => 'required', 
-	'hora_inicio' => 'required',
-	'hora_fim' => 'required'
+	   'hora_inicio' => 'required',
+	   'hora_fim' => 'required'
         );
         $validator = Validator::make(Input::all(), $regras);
 
@@ -88,11 +88,9 @@ class ReservaController extends Controller
 'hora_fim'=>date('Y-m-d H:i:s', strtotime(Input::get('data').''.Input::get('hora_fim'))), 'reservado' => 1]);
 
 	$countReservaUsuario = count($verificaReservaUsuario);
+		if( $countReservaUsuario == 1 ) {
 
-	
-			if( $countReservaUsuario == 1 ) {
-
-			    Session::flash('message', 'Você não pode reservar mais de 1 sala no mesmo período. Favor selecione outro período.');
+			    Session::flash('message', 'Você não pode reservar mais de 1 sala no mesmo período.');
 			    return Redirect::to('reservas/');
 
 			}if( $countReservaUsuario == 0 ){
@@ -115,36 +113,43 @@ class ReservaController extends Controller
 						    $reserva->hora_fim = date('Y-m-d H:i:s', strtotime($dataReserva.''.$horaFim));	 
 						    
 						    $reserva->reservado = 1;
-
-					    	    $reserva->save();
-
-					    $primeiraHora = date('Y-m-d H:i:s',  strtotime(Input::get('data').''.Input::get('hora_inicio')));
+						    $userID = Auth::user()->id; 
+				            $primeiraHora = date('Y-m-d H:i:s',  strtotime(Input::get('data').''.Input::get('hora_inicio')));
 					    $ultimaHora = date('Y-m-d H:i:s',  strtotime(Input::get('data').''.Input::get('hora_fim')));
-					    $salaID =  $reserva->sala_id;  
-					    $userID = Auth::user()->id;		
+					    $salaID =  $reserva->sala_id;   	
+				
+$verificaPorSala = DB::select('SELECT * FROM reservas WHERE sala_id = :sala_id  AND hora_inicio=:hora_inicio AND hora_fim =:hora_fim  AND user_id != :user_id',['user_id' => Auth::user()->id,
+'sala_id'=>Input::get('id'), 
+'hora_inicio'=>date('Y-m-d H:i:s', strtotime(Input::get('data').''.Input::get('hora_inicio'))), 
+'hora_fim'=>date('Y-m-d H:i:s', strtotime(Input::get('data').''.Input::get('hora_fim')))]);
+ 
+	$countVerificaPorSala = count($verificaPorSala);
 
-   $excluiReservaDupla = "DELETE FROM reservas WHERE hora_inicio = '$primeiraHora'  AND hora_fim = '$ultimaHora' AND sala_id = '$salaID' AND reservado = '1' AND user_id = '$userID' ORDER BY id DESC LIMIT 1";
-	DB::delete($excluiReservaDupla);
+					 if($countVerificaPorSala == 0){   	   
 
-
-					if(DB::delete($excluiReservaDupla) == 1) {						   
-						 /** Mostra mensagem de sucesso e redireciona para a index **/
-						   Session::flash('message', 'Sala reservada com sucesso. ');
+						 $reserva->save();
+						/** Mostra mensagem de sucesso e redireciona para a index **/
+						  Session::flash('message', 'Sala reservada com sucesso. ');
 						   return Redirect::to('reservas/');
-				      }
-				      
-				      if(DB::delete($excluiReservaDupla) == 0) {
-						Session::flash('message', 'A mesma sala não pode ser reservada por dois usuários no mesmo período, simultaneamente.');
-						    return Redirect::to('reservas/');		
-				      }	
-	
+					  
+   	 				
+					}  
+					 if($countVerificaPorSala == 1){
+					
+						
+					     Session::flash('message', 'A sala já está reservada neste mesmo período. ');
+						   return Redirect::to('reservas/');
+					} 
+	          
+				
+		 }
+
+		
 			   }	
 			
 		
-        }
-    }
-
-
+   
+}
     /**
      * Display the specified resource.
      *
