@@ -123,17 +123,17 @@ class ReservaController extends Controller
 					    $salaID =  $reserva->sala_id;  
 					    $userID = Auth::user()->id;		
 
-   $excluiReservaDupla = "DELETE FROM reservas WHERE hora_inicio = '$primeiraHora'  AND hora_fim = '$ultimaHora' AND sala_id = '$salaID' AND reservado = '1' AND user_id != '$userID' ORDER BY id DESC LIMIT 1";
-echo $excluiReservaDupla;
+   $excluiReservaDupla = "DELETE FROM reservas WHERE hora_inicio = '$primeiraHora'  AND hora_fim = '$ultimaHora' AND sala_id = '$salaID' AND reservado = '1' AND user_id = '$userID' ORDER BY id DESC LIMIT 1";
+	DB::delete($excluiReservaDupla);
 
 
-					if(DB::delete($excluiReservaDupla) == 0) {						   
+					if(DB::delete($excluiReservaDupla) == 1) {						   
 						 /** Mostra mensagem de sucesso e redireciona para a index **/
 						   Session::flash('message', 'Sala reservada com sucesso. ');
 						   return Redirect::to('reservas/');
 				      }
 				      
-				      if(DB::delete($excluiReservaDupla) == 1) {
+				      if(DB::delete($excluiReservaDupla) == 0) {
 						Session::flash('message', 'A mesma sala não pode ser reservada por dois usuários no mesmo período, simultaneamente.');
 						    return Redirect::to('reservas/');		
 				      }	
