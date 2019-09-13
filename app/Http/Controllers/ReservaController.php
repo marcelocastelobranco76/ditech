@@ -111,7 +111,9 @@ class ReservaController extends Controller
 						    $reserva->hora_inicio = date('Y-m-d H:i:s', strtotime($dataReserva.''.$horaInicio));
 							
 						    $reserva->hora_fim = date('Y-m-d H:i:s', strtotime($dataReserva.''.$horaFim));	 
-						    				 	
+						    
+						    $reserva->reservado = 1;
+
 					    	    $reserva->save();
 
 						    /** Mostra mensagem de sucesso e redireciona para a index **/

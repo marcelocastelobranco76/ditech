@@ -27,7 +27,11 @@ class CreateReservasTable extends Migration
             $table->foreign('sala_id')->references('id')->on('salas');
 
 	    $table->dateTime('hora_inicio');
+
 	    $table->dateTime('hora_fim');	
+
+	    $table->integer('reservado',1);		    
+	
             $table->timestamps();
         });
     }
