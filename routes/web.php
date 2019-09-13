@@ -35,6 +35,8 @@ Route::get('/home', 'HomeController@index')->name('home');
 		Route::delete('salas/{id}', 'SalaController@destroy');	
 		
 		Route::any('/reservas','ReservaController@index');
+	
+		Route::delete('reservas/{id}', 'ReservaController@destroy');
 
 
 	});

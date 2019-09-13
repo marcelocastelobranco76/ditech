@@ -78,13 +78,7 @@
 						 			<td width="16%">
 			                             <a class="btn btn-info pull-left" style="margin-right: 13px;" href="{{ URL::to('/reservas/' . $value->id . '/editar') }}">Editar</a>
 			                
-			                                {{ Form::open(array('style' =>'margin-top: 1%', 'url' => '/reservas/' . $value->id, 'onsubmit' => 'return ConfirmaDelete()')) }}
-			                                    {{ Form::hidden('_method', 'DELETE') }}
-			                                   {!! Form::submit('Remover', ['class' => 'btn btn-danger']) !!}
-			                                   {{ Form::close() }}
-
-			               
-			                
+			                             
 			               
 			                        </td>
 						 @endif
