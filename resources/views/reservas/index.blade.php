@@ -8,7 +8,7 @@
         <div class="container">
 
             <h1>Lista de reservas</h1>Exemplo de horário vago: Das 16:00:00 às 17:00:00
-	   @if (Auth::user()->is_admin) <p><a href="{{ url('reservas/cadastrar') }}"> Cadastrar salas</a>@endif
+	  
           
 	  <!--Div com mensagens do sistema -->
             @if (Session::has('message'))
@@ -19,14 +19,12 @@
                 <thead>
                     <tr>
                           @if (Auth::user()->is_admin)<td>ID</td>@endif
-            	         <td>QUEM RESERVOU</td>
+            	         <td>RESERVADO PARA</td>
+			 <td>DATA</td>
                          <td>SALA</td>
 						 <td>DESCRIÇÃO</td>
-						 <td>DATA E HORÁRIO</td>
-						 <td>HORA<br/>INICIAL</td>
-						 <td>HORA<br/>FINAL</td>
-			            	     
-							<td>AÇÕES</td>
+						 <td>HORÁRIOS</td>
+						 <td>AÇÕES</td>
 						
 		      	
                     </tr>
@@ -42,66 +40,105 @@
 			                    <tr>
 			                         @if (Auth::user()->is_admin)<td  width="2%">{{ $value->id}}</td>@endif
 			                        
-						  <td  width="13%">{{ $value->name}}</td>
+						  <td  width="10%">{{ $value->name}}</td>
+						  <td  width="6%">{{ $dataReserva}}</td>		
 			            	          <td  width="7%">{{ $value->nome}}</td>
-						  <td width="15%">{{ $value->descricao}}</td>
-					          <td width="25%"> {{$dataReserva}} Das {{$horaInicio}} às {{$horaFim}}</td>
-						  <td width="5%">
+						  <td width="10%">{{ $value->descricao}}
+						  </td>
+					          <td width="20%"> 
 
-						<?php
-							$i = 0; $j = 0;			
-						  	for ($i = 8; $i <= 18; $i++) {
+						<p>Ocupados no dia <?php echo $dataReserva;?> :
+						<?php 
+							if($horaInicio == '08:00:00' || $horaInicio == '09:00:00' ) {
+								$horaInicioExplode = explode(":",$horaInicio);
+								$valorInicioExplode = str_replace('0','',$horaInicioExplode[0]);
+								
+								$i = 0;
+								for ($i = 8; $i <= 19; $i++) {
 							
-								if ($i % 2 == 0 && $i != substr($horaInicio,0,2)) {
+								     if ($i == substr($horaInicio,0,2) || ($i == $valorInicioExplode)) {
 								    
-								    echo '<p>'.$i.':00';		
+								    	echo '<p style="background-color:#F44336" >'.$i.':00';	
+								    }
 								}
-
-							}?>
+							}
+							if($horaInicio != '08:00:00' || $horaInicio !='09:00:00' ) {
+								
+								
+								$i = 0;
+								for ($i = 8; $i <= 19; $i++) {
 							
-						</td>
+								     if ($i == substr($horaInicio,0,2)) {
+								    
+								    	echo '<p style="background-color:#F44336" >'.$i.':00';	
+								    }
+								}
+							}	
+							if($horaFim == '08:00:00' || $horaFim == '09:00:00' ) {
+								$horaFimExplode = explode(":",$horaFim);
+								$valorFimExplode = str_replace('0','',$horaFimExplode[0]);
+								$i = 0;
+								for ($i = 8; $i <= 19; $i++) {
+							
+								     if ($i == substr($horaFim,0,2) || ($i == $valorFimExplode)) {
+								    
+								    	echo '<p style="background-color:#F44336" >'.$i.':00';	
+								    }		
+								}
+							}
+							
+							
+						 ?>
+								
+							
+						<p>Vagos no dia <?php echo $dataReserva;?> :
 						
-						<td width="5%">
-							<?php for ($j = 9; $j <= 19; $j++) {
-							
-								if ($j % 2 != 0 && $j != substr($horaFim,0,2)) {
-								    
-								   echo '<p>'.$j.':00';		
-								}
+						<?php  
 
-							}		
+							 $i = 0;
+	if($horaInicio == '08:00:00' || $horaInicio == '09:00:00' || $horaFim == '08:00:00' || $horaFim == '09:00:00'  ) {
+								
+								$horaInicioExplode = explode(":",$horaInicio);
+								$valorInicioExplode = str_replace('0','',$horaInicioExplode[0]);
+								$horaFimExplode = explode(":",$horaFim);
+								$valorFimExplode = str_replace('0','',$horaFimExplode[0]);
+								
+								for ($i = 8; $i <= 19; $i++) {
+							
+			if ($i != substr($horaInicio,0,2) && $i != $valorInicioExplode && $i != substr($horaFim,0,2) && $i != $valorFimExplode  ) {
+								    
+								    	echo '<p style="background-color:lightgreen" >'.$i.':00';	
+								    }
+								    
+								}
+							}	
 							?>
-						</td>
+
+					</td>
+						  
 					        
 			                       
-			                         @if (Auth::user()->is_admin)
-						 			<td width="16%">
-			                             <a class="btn btn-info pull-left" style="margin-right: 13px;" href="{{ URL::to('/reservas/' . $value->id . '/editar') }}">Editar</a>
-			                
-			                             
-			               
-			                        </td>
-						 @endif
+			                        
 
 						
 				
 						                  
-				
-						@if (Auth::user()->id == $value->user_id)
-							
+							      @if (Auth::user()->id == $value->user_id)
+						
 						 			<td width="16%">
-			                             
-			                                    {{ Form::open(array('style' =>'margin-top: 1%', 'url' => '/reservas/' . $value->id, 'onsubmit' => 'return ConfirmaDelete()')) }}
+			                       
+							
+     {{ Form::open(array('style' =>'margin-top: 1%', 'url' => '/reservas/' . $value->id, 'onsubmit' => 'return ConfirmaDelete()')) }}
 			                                    {{ Form::hidden('_method', 'DELETE') }}
 			                                   {!! Form::submit('Remover', ['class' => 'btn btn-danger']) !!}
 			                                   {{ Form::close() }}
 
-			               
+			               			
 			                
 			               
 			                        </td>
-						
-					@endif
+						@endif
+					
 			                    </tr>
                 @endforeach
                 </tbody>

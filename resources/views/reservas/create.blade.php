@@ -11,23 +11,30 @@
 <!-- se existir algum erro de cadastro, vai aparecer aqui -->
 {{ HTML::ul($errors->all()) }}
 
-{{ Form::open(array('url' => 'reservas','name' => 'cadastroReserva', 'id' => 'cadastroReserva')) }}
+ @if (Auth::user()->is_admin){{ Form::open(array('url' => 'admin/reservas','name' => 'cadastroReserva', 'id' => 'cadastroReserva')) }}@endif
+
+@if (!Auth::user()->is_admin){{ Form::open(array('url' => 'reservas','name' => 'cadastroReserva', 'id' => 'cadastroReserva')) }}@endif
 
     <div class="form-group">
 
 	{{ Form::label('id', 'Salas disponíveis para reserva') }}
         {!! Form::select('id', $salas, null,['id' => 'sala','class' => 'form-control', 'placeholder' => 'Selecione uma das salas']) !!}
+ @if (Auth::user()->is_admin)
 
+	{{ Form::label('id', 'Usuários') }}
+        {!! Form::select('user_id', $usuarios, null,['id' => 'usuario','class' => 'form-control', 'placeholder' => 'Selecione um dos usuários']) !!}
+
+ @endif
          {{ Form::label('data', 'Data') }}
          {{ Form::text('data', Input::old('data'),array('getElementById' => 'data', 'class' => 'form-control', 'placeholder' => 'dd/mm/aaa') ) }}
 	
 	{{ Form::label('hora_inicio', 'Hora início') }}
-        <select onChange=functionBloqueiaReserva() id="hora_inicio" name="hora_inicio" class="form-control">
+        <select id="hora_inicio" name="hora_inicio" class="form-control">
   	    <option>Selecione uma hora inicial</option>
 	    @for ($i = 8; $i <= 18; $i++)
-		@if( $i % 2 == 0 )
+		
 		    <option value="{{ $i }}:00">{{ $i }}:00</option>
-		@endif
+		
 	    @endfor               
 		</select>
 
@@ -36,9 +43,9 @@
 	 <select id="hora_fim" name="hora_fim" class="form-control">
   	    <option>Selecione uma hora final</option>
 	    @for ($j = 9; $j <= 19; $j++)
-	   	 @if( $j % 2 != 0 )	
+	   	 	
 	    		<option value="{{ $j }}:00">{{ $j }}:00</option>
-		 @endif
+		 
 	    @endfor               
 		</select>
         {{ Form::label('descricao', 'Descrição') }}
@@ -65,7 +72,7 @@
 			 $reservas = $reservas->get();
 			?>
 			 @foreach($reservas as $reserva)
-			   <?php $dataReserva =  DateTime::createFromFormat("Y-m-d H:i:s",$reserva->hora_inicio)->format("m/d/Y");?>
+			   <?php $dataReserva =  DateTime::createFromFormat("Y-d-m H:i:s",$reserva->hora_inicio)->format("d/m/Y");?>
   			   <?php $horaInicio =  DateTime::createFromFormat("Y-m-d H:i:s",$reserva->hora_inicio)->format("H:i:s");?>
 	   	           <?php $horaFim =  DateTime::createFromFormat("Y-m-d H:i:s",$reserva->hora_fim)->format("H:i:s");?>
 				

@@ -31,7 +31,7 @@ class ReservaController extends Controller
        ->join('users', 'users.id', '=', 'reservas.user_id')
        ->join('salas', 'salas.id', '=', 'reservas.sala_id')
        ->select('salas.nome', 'users.name','reservas.user_id','reservas.id', 'reservas.descricao', 'reservas.hora_inicio', 'reservas.hora_fim')
-       ->paginate(2);
+       ->paginate(3);
 
 	/**Carrega a visualização e mostra as reservas **/
           return view('reservas.index', compact('reservas'));
@@ -44,11 +44,13 @@ class ReservaController extends Controller
      */
     public function create()
     {
-        /**Carrega no select drop down todas as salas cadastradas **/
+        /**Carrega no select drop down todas as salas cadastradas e todos os usuários cadastrados que não sejam admin **/
 
 	$salas = Sala::pluck('nome', 'id')->all();
+	
+	$usuarios =  User::where('is_admin',0)->pluck('name','id');
 		 
-	return view('reservas.create')->with(compact('salas'));
+	return view('reservas.create')->with(compact('salas','usuarios'));
 
     }
 
@@ -88,6 +90,8 @@ class ReservaController extends Controller
 'hora_fim'=>date('Y-m-d H:i:s', strtotime(Input::get('data').''.Input::get('hora_fim'))), 'reservado' => 1]);
 
 	$countReservaUsuario = count($verificaReservaUsuario);
+
+
 		if( $countReservaUsuario == 1 ) {
 
 			    Session::flash('message', 'Você não pode reservar mais de 1 sala no mesmo período.');
@@ -97,7 +101,11 @@ class ReservaController extends Controller
 				
 					    /** Cria o objeto Reserva, pega as informações vindas da tela de cadastro e salva **/
 					   	    $reserva = new Reserva; 
-						    $reserva->user_id  = Auth::user()->id;	
+						  
+						   
+							$reserva->user_id  = Auth::user()->id;
+						   
+						   	
 						    $reserva->sala_id  = Input::get('id');
 
 						    $reserva->descricao  = Input::get('descricao');	
@@ -109,20 +117,18 @@ class ReservaController extends Controller
 						    $horaFim = Input::get('hora_fim');	
 						   
 						    $reserva->hora_inicio = date('Y-m-d H:i:s', strtotime($dataReserva.''.$horaInicio));
+
 							
 						    $reserva->hora_fim = date('Y-m-d H:i:s', strtotime($dataReserva.''.$horaFim));	 
 						    
 						    $reserva->reservado = 1;
-						    $userID = Auth::user()->id; 
-				            $primeiraHora = date('Y-m-d H:i:s',  strtotime(Input::get('data').''.Input::get('hora_inicio')));
-					    $ultimaHora = date('Y-m-d H:i:s',  strtotime(Input::get('data').''.Input::get('hora_fim')));
-					    $salaID =  $reserva->sala_id;   	
+						   	
 				
-$verificaPorSala = DB::select('SELECT * FROM reservas WHERE sala_id = :sala_id  AND hora_inicio=:hora_inicio AND hora_fim =:hora_fim  AND user_id != :user_id',['user_id' => Auth::user()->id,
-'sala_id'=>Input::get('id'), 
-'hora_inicio'=>date('Y-m-d H:i:s', strtotime(Input::get('data').''.Input::get('hora_inicio'))), 
-'hora_fim'=>date('Y-m-d H:i:s', strtotime(Input::get('data').''.Input::get('hora_fim')))]);
- 
+	$verificaPorSala = DB::select('SELECT * FROM reservas WHERE sala_id = :sala_id  AND hora_inicio=:hora_inicio AND hora_fim =:hora_fim  AND user_id != :user_id',['user_id' => Auth::user()->id,
+	'sala_id'=>Input::get('id'), 
+	'hora_inicio'=>date('Y-m-d H:i:s', strtotime(Input::get('data').''.Input::get('hora_inicio'))), 
+	'hora_fim'=>date('Y-m-d H:i:s', strtotime(Input::get('data').''.Input::get('hora_fim')))]);
+
 	$countVerificaPorSala = count($verificaPorSala);
 
 					 if($countVerificaPorSala == 0){   	   
@@ -170,9 +176,10 @@ $verificaPorSala = DB::select('SELECT * FROM reservas WHERE sala_id = :sala_id  
    public function edit($id)
     {
         /** Encontra a reserva pelo id e pelo id do usuário **/
-
-	$user_id = Auth::user()->id;
-        $reserva = DB::select('SELECT * FROM reservas WHERE id = :id AND user_id = :user_id', ['id' => $id, 'user_id' => $user_id]);
+	if (!Auth::user()->is_admin){ 
+		 $user_id = Auth::user()->id;
+       		 $reserva = DB::select('SELECT * FROM reservas WHERE id = :id AND user_id = :user_id', ['id' => $id, 'user_id' => $user_id]);
+	}
 
         /** Mostra o formulário de edição e passa a reserva que será editada **/
         return view('reservas.edit', compact('reserva'));

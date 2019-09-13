@@ -38,6 +38,8 @@ Route::get('/home', 'HomeController@index')->name('home');
 	
 		Route::delete('reservas/{id}', 'ReservaController@destroy');
 
+  		Route::resource('usuarios', 'UserController');
+
 
 	});
 	
