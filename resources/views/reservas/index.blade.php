@@ -25,16 +25,10 @@
 						 <td>DATA E HORÁRIO</td>
 						 <td>HORA<br/>INICIAL</td>
 						 <td>HORA<br/>FINAL</td>
-			            	      @if (Auth::user()->is_admin)
+			            	     
 							<td>AÇÕES</td>
-						@endif
-
-		      @if(isset($reservas[0]->user_id)) 
-			
-			 @if (Auth::user()->id == $reservas[0]->user_id)
-				<td>AÇÕES</td>
-			@endif
-		     @endif	   	
+						
+		      	
                     </tr>
                 </thead>
                 <tbody>
@@ -52,7 +46,7 @@
 			            	          <td  width="7%">{{ $value->nome}}</td>
 						  <td width="15%">{{ $value->descricao}}</td>
 					          <td width="25%"> {{$dataReserva}} Das {{$horaInicio}} às {{$horaFim}}</td>
-						  <td width="8%">
+						  <td width="5%">
 
 						<?php
 							$i = 0; $j = 0;			
@@ -60,14 +54,14 @@
 							
 								if ($i % 2 == 0 && $i != substr($horaInicio,0,2)) {
 								    
-								    echo '<p>'.$i.':00 &nbsp;&nbsp;às';		
+								    echo '<p>'.$i.':00';		
 								}
 
 							}?>
 							
 						</td>
 						
-						<td width="8%">
+						<td width="5%">
 							<?php for ($j = 9; $j <= 19; $j++) {
 							
 								if ($j % 2 != 0 && $j != substr($horaFim,0,2)) {
@@ -79,12 +73,11 @@
 							?>
 						</td>
 					        
-			                        <!-- Ações : Editar e excluir reservas - Essas ações apenas os administradores podem executar. -->
+			                       
 			                         @if (Auth::user()->is_admin)
 						 			<td width="16%">
 			                             <a class="btn btn-info pull-left" style="margin-right: 13px;" href="{{ URL::to('/reservas/' . $value->id . '/editar') }}">Editar</a>
 			                
-			                            <!-- Edita a sala (utiliza o método encontrado em GET /reservas/{id}/editar --> 
 			                                {{ Form::open(array('style' =>'margin-top: 1%', 'url' => '/reservas/' . $value->id, 'onsubmit' => 'return ConfirmaDelete()')) }}
 			                                    {{ Form::hidden('_method', 'DELETE') }}
 			                                   {!! Form::submit('Remover', ['class' => 'btn btn-danger']) !!}
@@ -96,10 +89,11 @@
 			                        </td>
 						 @endif
 
-						<!-- A remoção da reserva de uma sala é possível apenas pelo próprio reservante  -->
-					@if(isset($reservas[0]->user_id))                         
+						
 				
-						@if (Auth::user()->id == $reservas[0]->user_id)
+						                  
+				
+						@if (Auth::user()->id == $value->user_id)
 							
 						 			<td width="16%">
 			                             
@@ -112,7 +106,7 @@
 			                
 			               
 			                        </td>
-						 @endif
+						
 					@endif
 			                    </tr>
                 @endforeach

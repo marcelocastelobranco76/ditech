@@ -47,7 +47,9 @@ class ReservaController extends Controller
         /**Carrega no select drop down todas as salas cadastradas **/
 
 	$salas = Sala::pluck('nome', 'id')->all();
-        return view('reservas.create')->with(compact('salas'));
+		 
+	return view('reservas.create')->with(compact('salas'));
+
     }
 
     /**
@@ -116,9 +118,26 @@ class ReservaController extends Controller
 
 					    	    $reserva->save();
 
-						    /** Mostra mensagem de sucesso e redireciona para a index **/
+					    $primeiraHora = date('Y-m-d H:i:s',  strtotime(Input::get('data').''.Input::get('hora_inicio')));
+					    $ultimaHora = date('Y-m-d H:i:s',  strtotime(Input::get('data').''.Input::get('hora_fim')));
+					    $salaID =  $reserva->sala_id;  
+					    $userID = Auth::user()->id;		
+
+   $excluiReservaDupla = "DELETE FROM reservas WHERE hora_inicio = '$primeiraHora'  AND hora_fim = '$ultimaHora' AND sala_id = '$salaID' AND reservado = '1' AND user_id != '$userID' ORDER BY id DESC LIMIT 1";
+echo $excluiReservaDupla;
+
+
+					if(DB::delete($excluiReservaDupla) == 0) {						   
+						 /** Mostra mensagem de sucesso e redireciona para a index **/
 						   Session::flash('message', 'Sala reservada com sucesso. ');
-						    return Redirect::to('reservas/');
+						   return Redirect::to('reservas/');
+				      }
+				      
+				      if(DB::delete($excluiReservaDupla) == 1) {
+						Session::flash('message', 'A mesma sala não pode ser reservada por dois usuários no mesmo período, simultaneamente.');
+						    return Redirect::to('reservas/');		
+				      }	
+	
 			   }	
 			
 		
