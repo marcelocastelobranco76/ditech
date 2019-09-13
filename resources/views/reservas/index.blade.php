@@ -9,7 +9,8 @@
 
             <h1>Lista de reservas</h1>Exemplo de horário vago: Das 16:00:00 às 17:00:00
 	   @if (Auth::user()->is_admin) <p><a href="{{ url('reservas/cadastrar') }}"> Cadastrar salas</a>@endif
-            <!--Div com mensagens do sistema -->
+          
+	  <!--Div com mensagens do sistema -->
             @if (Session::has('message'))
                 <div class="alert alert-info">{{ Session::get('message') }}</div>
             @endif
@@ -24,17 +25,24 @@
 			 <td>DATA E HORÁRIO</td>
 			 <td>HORA<br/>INICIAL</td>
 			 <td>HORA<br/>FINAL</td>
-            	      @if (Auth::user()->is_admin)<td >AÇÕES</td>@endif
+            	      @if (Auth::user()->is_admin)
+				<td>AÇÕES</td>
+			@endif
+
+		      @if(isset($reservas[0]->user_id)) 
+			
+			 @if (Auth::user()->id == $reservas[0]->user_id)
+				<td>AÇÕES</td>
+			@endif
+		     @endif	   	
                     </tr>
                 </thead>
                 <tbody>
                   @foreach($reservas as $key => $value)
+			   
 			  <?php $dataReserva =  DateTime::createFromFormat("Y-m-d H:i:s",$value->hora_inicio)->format("m/d/Y");?>
 			  <?php $horaInicio =  DateTime::createFromFormat("Y-m-d H:i:s",$value->hora_inicio)->format("H:i:s");?>
 		          <?php $horaFim =  DateTime::createFromFormat("Y-m-d H:i:s",$value->hora_fim)->format("H:i:s");?>
-
-			
-
 
 
                     <tr>
@@ -79,14 +87,33 @@
                             <!-- Edita a sala (utiliza o método encontrado em GET /reservas/{id}/editar --> 
                                 {{ Form::open(array('style' =>'margin-top: 1%', 'url' => '/reservas/' . $value->id, 'onsubmit' => 'return ConfirmaDelete()')) }}
                                     {{ Form::hidden('_method', 'DELETE') }}
-                                   {!! Form::submit('Apagar', ['class' => 'btn btn-danger']) !!}
-                                {{ Form::close() }}
+                                   {!! Form::submit('Remover', ['class' => 'btn btn-danger']) !!}
+                                   {{ Form::close() }}
 
                
                 
                
                         </td>
 			 @endif
+
+			<!-- A remoção da reserva de uma sala é possível apenas pelo próprio reservante  -->
+		@if(isset($reservas[0]->user_id))                         
+	
+			@if (Auth::user()->id == $reservas[0]->user_id)
+				
+			 <td width="16%">
+                             
+                                    {{ Form::open(array('style' =>'margin-top: 1%', 'url' => '/reservas/' . $value->id, 'onsubmit' => 'return ConfirmaDelete()')) }}
+                                    {{ Form::hidden('_method', 'DELETE') }}
+                                   {!! Form::submit('Remover', ['class' => 'btn btn-danger']) !!}
+                                   {{ Form::close() }}
+
+               
+                
+               
+                        </td>
+			 @endif
+		@endif
                     </tr>
                 @endforeach
                 </tbody>
