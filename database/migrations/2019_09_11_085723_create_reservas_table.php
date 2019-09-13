@@ -15,24 +15,15 @@ class CreateReservasTable extends Migration
     {
         Schema::create('reservas', function (Blueprint $table) {
             $table->increments('id');
-           
-	    $table->integer('user_id')->unsigned()->index();
-           
+            $table->integer('user_id')->unsigned()->index();
             $table->integer('sala_id')->unsigned()->index();
-		
-	    $table->string('descricao',255);	
-           
-	    $table->foreign('user_id')->references('id')->on('users');	
-	   
-            $table->foreign('sala_id')->references('id')->on('salas');
-
-	    $table->dateTime('hora_inicio');
-
-	    $table->dateTime('hora_fim');	
-
-	    $table->integer('reservado',1);		    
-	
-            $table->timestamps();
+		    $table->string('descricao',255);	
+            $table->foreign('user_id')->references('id')->on('users');	
+	        $table->foreign('sala_id')->references('id')->on('salas');
+    	    $table->dateTime('hora_inicio');
+            $table->dateTime('hora_fim');	
+    	    $table->integer('reservado',1);		    
+	        $table->timestamps();
         });
     }
 

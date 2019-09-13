@@ -22,7 +22,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 /** Rotas para as areas de gerenciamento das salas. Só os administradores têm acesso. **/ 
 
 	Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function() { 
-	    	Route::any('/salas','SalaController@index');
+	    Route::any('/salas','SalaController@index');
 
 		Route::get('salas/cadastrar', 'SalaController@create');
 
@@ -38,6 +38,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 
 	});
+	
 	Route::get('logout', 'Auth\LoginController@logout'); /** Rota para logout **/
 
 	Route::any('/salas','SalaController@index');

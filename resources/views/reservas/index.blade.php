@@ -21,13 +21,13 @@
                           @if (Auth::user()->is_admin)<td>ID</td>@endif
             	         <td>QUEM RESERVOU</td>
                          <td>SALA</td>
-			 <td>DESCRIÇÃO</td>
-			 <td>DATA E HORÁRIO</td>
-			 <td>HORA<br/>INICIAL</td>
-			 <td>HORA<br/>FINAL</td>
-            	      @if (Auth::user()->is_admin)
-				<td>AÇÕES</td>
-			@endif
+						 <td>DESCRIÇÃO</td>
+						 <td>DATA E HORÁRIO</td>
+						 <td>HORA<br/>INICIAL</td>
+						 <td>HORA<br/>FINAL</td>
+			            	      @if (Auth::user()->is_admin)
+							<td>AÇÕES</td>
+						@endif
 
 		      @if(isset($reservas[0]->user_id)) 
 			
@@ -40,81 +40,81 @@
                 <tbody>
                   @foreach($reservas as $key => $value)
 			   
-			  <?php $dataReserva =  DateTime::createFromFormat("Y-m-d H:i:s",$value->hora_inicio)->format("m/d/Y");?>
-			  <?php $horaInicio =  DateTime::createFromFormat("Y-m-d H:i:s",$value->hora_inicio)->format("H:i:s");?>
-		          <?php $horaFim =  DateTime::createFromFormat("Y-m-d H:i:s",$value->hora_fim)->format("H:i:s");?>
+						  <?php $dataReserva =  DateTime::createFromFormat("Y-m-d H:i:s",$value->hora_inicio)->format("m/d/Y");?>
+						  <?php $horaInicio =  DateTime::createFromFormat("Y-m-d H:i:s",$value->hora_inicio)->format("H:i:s");?>
+					      <?php $horaFim =  DateTime::createFromFormat("Y-m-d H:i:s",$value->hora_fim)->format("H:i:s");?>
 
 
-                    <tr>
-                         @if (Auth::user()->is_admin)<td  width="2%">{{ $value->id}}</td>@endif
-                        
-			  <td  width="13%">{{ $value->name}}</td>
-            	          <td  width="7%">{{ $value->nome}}</td>
-			  <td width="15%">{{ $value->descricao}}</td>
-		          <td width="25%"> {{$dataReserva}} Das {{$horaInicio}} às {{$horaFim}}</td>
-			  <td width="8%">
+			                    <tr>
+			                         @if (Auth::user()->is_admin)<td  width="2%">{{ $value->id}}</td>@endif
+			                        
+						  <td  width="13%">{{ $value->name}}</td>
+			            	          <td  width="7%">{{ $value->nome}}</td>
+						  <td width="15%">{{ $value->descricao}}</td>
+					          <td width="25%"> {{$dataReserva}} Das {{$horaInicio}} às {{$horaFim}}</td>
+						  <td width="8%">
 
-			<?php
-				$i = 0; $j = 0;			
-			  	for ($i = 8; $i <= 18; $i++) {
+						<?php
+							$i = 0; $j = 0;			
+						  	for ($i = 8; $i <= 18; $i++) {
+							
+								if ($i % 2 == 0 && $i != substr($horaInicio,0,2)) {
+								    
+								    echo '<p>'.$i.':00 &nbsp;&nbsp;às';		
+								}
+
+							}?>
+							
+						</td>
+						
+						<td width="8%">
+							<?php for ($j = 9; $j <= 19; $j++) {
+							
+								if ($j % 2 != 0 && $j != substr($horaFim,0,2)) {
+								    
+								   echo '<p>'.$j.':00';		
+								}
+
+							}		
+							?>
+						</td>
+					        
+			                        <!-- Ações : Editar e excluir reservas - Essas ações apenas os administradores podem executar. -->
+			                         @if (Auth::user()->is_admin)
+						 			<td width="16%">
+			                             <a class="btn btn-info pull-left" style="margin-right: 13px;" href="{{ URL::to('/reservas/' . $value->id . '/editar') }}">Editar</a>
+			                
+			                            <!-- Edita a sala (utiliza o método encontrado em GET /reservas/{id}/editar --> 
+			                                {{ Form::open(array('style' =>'margin-top: 1%', 'url' => '/reservas/' . $value->id, 'onsubmit' => 'return ConfirmaDelete()')) }}
+			                                    {{ Form::hidden('_method', 'DELETE') }}
+			                                   {!! Form::submit('Remover', ['class' => 'btn btn-danger']) !!}
+			                                   {{ Form::close() }}
+
+			               
+			                
+			               
+			                        </td>
+						 @endif
+
+						<!-- A remoção da reserva de uma sala é possível apenas pelo próprio reservante  -->
+					@if(isset($reservas[0]->user_id))                         
 				
-					if ($i % 2 == 0 && $i != substr($horaInicio,0,2)) {
-					    
-					    echo '<p>'.$i.':00 &nbsp;&nbsp;às';		
-					}
+						@if (Auth::user()->id == $reservas[0]->user_id)
+							
+						 			<td width="16%">
+			                             
+			                                    {{ Form::open(array('style' =>'margin-top: 1%', 'url' => '/reservas/' . $value->id, 'onsubmit' => 'return ConfirmaDelete()')) }}
+			                                    {{ Form::hidden('_method', 'DELETE') }}
+			                                   {!! Form::submit('Remover', ['class' => 'btn btn-danger']) !!}
+			                                   {{ Form::close() }}
 
-				}?>
-				
-			</td>
-			
-			<td width="8%">
-				<?php for ($j = 9; $j <= 19; $j++) {
-				
-					if ($j % 2 != 0 && $j != substr($horaFim,0,2)) {
-					    
-					   echo '<p>'.$j.':00';		
-					}
-
-				}		
-				?>
-			</td>
-		        
-                        <!-- Ações : Editar e excluir reservas - Essas ações apenas os administradores podem executar. -->
-                         @if (Auth::user()->is_admin)
-			 <td width="16%">
-                             <a class="btn btn-info pull-left" style="margin-right: 13px;" href="{{ URL::to('/reservas/' . $value->id . '/editar') }}">Editar</a>
-                
-                            <!-- Edita a sala (utiliza o método encontrado em GET /reservas/{id}/editar --> 
-                                {{ Form::open(array('style' =>'margin-top: 1%', 'url' => '/reservas/' . $value->id, 'onsubmit' => 'return ConfirmaDelete()')) }}
-                                    {{ Form::hidden('_method', 'DELETE') }}
-                                   {!! Form::submit('Remover', ['class' => 'btn btn-danger']) !!}
-                                   {{ Form::close() }}
-
-               
-                
-               
-                        </td>
-			 @endif
-
-			<!-- A remoção da reserva de uma sala é possível apenas pelo próprio reservante  -->
-		@if(isset($reservas[0]->user_id))                         
-	
-			@if (Auth::user()->id == $reservas[0]->user_id)
-				
-			 <td width="16%">
-                             
-                                    {{ Form::open(array('style' =>'margin-top: 1%', 'url' => '/reservas/' . $value->id, 'onsubmit' => 'return ConfirmaDelete()')) }}
-                                    {{ Form::hidden('_method', 'DELETE') }}
-                                   {!! Form::submit('Remover', ['class' => 'btn btn-danger']) !!}
-                                   {{ Form::close() }}
-
-               
-                
-               
-                        </td>
-			 @endif
-		@endif
-                    </tr>
+			               
+			                
+			               
+			                        </td>
+						 @endif
+					@endif
+			                    </tr>
                 @endforeach
                 </tbody>
             </table>

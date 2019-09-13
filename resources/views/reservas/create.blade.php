@@ -29,7 +29,7 @@
 		    <option value="{{ $i }}:00">{{ $i }}:00</option>
 		@endif
 	    @endfor               
-	</select>
+		</select>
 
 	
 	{{ Form::label('hora_fim', 'Hora fim') }}
@@ -40,7 +40,7 @@
 	    		<option value="{{ $j }}:00">{{ $j }}:00</option>
 		 @endif
 	    @endfor               
-	</select>
+		</select>
         {{ Form::label('descricao', 'Descrição') }}
         {{ Form::text('descricao', Input::old('descricao'), array('class' => 'form-control', 'placeholder' => 'Informe a descrição')) }}
                 
@@ -51,7 +51,7 @@
 
     {{ Form::submit('Salvar', array('class' => 'btn btn-primary')) }}
 
-{{ Form::close() }}
+	{{ Form::close() }}
 
 </div>
 
