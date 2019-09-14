@@ -110,7 +110,7 @@ class ReservaController extends Controller
 
 						    $reserva->descricao  = Input::get('descricao');	
 
-						    $dataReserva = Input::get('data');
+						    $dataReserva =  str_replace('/', '-', Input::get('data'));
 
 						    $horaInicio = Input::get('hora_inicio');
 						    

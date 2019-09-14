@@ -72,7 +72,7 @@
 			 $reservas = $reservas->get();
 			?>
 			 @foreach($reservas as $reserva)
-			   <?php $dataReserva =  DateTime::createFromFormat("Y-d-m H:i:s",$reserva->hora_inicio)->format("d/m/Y");?>
+			   <?php $dataReserva =  DateTime::createFromFormat("Y-m-d H:i:s",$reserva->hora_inicio)->format("d/m/Y");?>
   			   <?php $horaInicio =  DateTime::createFromFormat("Y-m-d H:i:s",$reserva->hora_inicio)->format("H:i:s");?>
 	   	           <?php $horaFim =  DateTime::createFromFormat("Y-m-d H:i:s",$reserva->hora_fim)->format("H:i:s");?>
 				
